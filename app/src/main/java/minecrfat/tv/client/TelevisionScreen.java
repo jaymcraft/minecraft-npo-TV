@@ -1,0 +1,68 @@
+package minecrfat.tv.client;
+
+import minecrfat.tv.MinecraftTv;
+import minecrfat.tv.TelevisionChannel;
+import minecrfat.tv.network.SetChannelPayload;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.util.Util;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+
+public class TelevisionScreen extends Screen {
+    private final BlockPos pos;
+    private TelevisionChannel selectedChannel;
+
+    public TelevisionScreen(BlockPos pos, TelevisionChannel selectedChannel) {
+        super(Component.translatable("screen.minecraft_tv.television"));
+        this.pos = pos;
+        this.selectedChannel = selectedChannel;
+    }
+
+    @Override
+    protected void init() {
+        int centerX = width / 2;
+        int top = height / 2 - 56;
+        addChannelButton(centerX - 102, top, TelevisionChannel.NPO1, "button.minecraft_tv.npo1");
+        addChannelButton(centerX + 2, top, TelevisionChannel.NPO2, "button.minecraft_tv.npo2");
+        addChannelButton(centerX - 102, top + 24, TelevisionChannel.NPO3, "button.minecraft_tv.npo3");
+        addChannelButton(centerX + 2, top + 24, TelevisionChannel.OFF, "button.minecraft_tv.off");
+
+        addRenderableWidget(Button.builder(Component.translatable("button.minecraft_tv.open_stream"), button -> openStream())
+                .bounds(centerX - 102, top + 58, 204, 20)
+                .build());
+    }
+
+    private void addChannelButton(int x, int y, TelevisionChannel channel, String translationKey) {
+        addRenderableWidget(Button.builder(Component.translatable(translationKey), button -> selectChannel(channel))
+                .bounds(x, y, 100, 20)
+                .build());
+    }
+
+    private void selectChannel(TelevisionChannel channel) {
+        selectedChannel = channel;
+        ClientPlayNetworking.send(new SetChannelPayload(pos, channel));
+    }
+
+    private void openStream() {
+        if (selectedChannel.hasStream()) {
+            Util.getPlatform().openUri(selectedChannel.url());
+        }
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+        graphics.centeredText(font, title, width / 2, height / 2 - 88, 0xFFFFFF);
+        graphics.centeredText(
+                font,
+                Component.translatable("screen.minecraft_tv.current_channel",
+                        Component.translatable("channel." + MinecraftTv.MOD_ID + "." + selectedChannel.getSerializedName())),
+                width / 2,
+                height / 2 - 72,
+                0xA0D8FF
+        );
+        super.extractRenderState(graphics, mouseX, mouseY, delta);
+    }
+}

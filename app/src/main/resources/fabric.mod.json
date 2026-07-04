@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "minecraft_tv",
+  "version": "${version}",
+  "name": "Minecraft TV",
+  "description": "Adds a television block with NPO 1, NPO 2 and NPO 3 channel selection.",
+  "authors": [
+    "Jayden"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "minecrfat.tv.MinecraftTv"
+    ],
+    "client": [
+      "minecrfat.tv.MinecraftTvClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

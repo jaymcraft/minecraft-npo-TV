@@ -1,0 +1,79 @@
+package minecrfat.tv;
+
+import minecrfat.tv.network.SetChannelPayload;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
+
+public class MinecraftTv implements ModInitializer {
+    public static final String MOD_ID = "minecraft_tv";
+    public static final Identifier TELEVISION_ID = id("television");
+    public static final ResourceKey<Block> TELEVISION_BLOCK_KEY =
+            ResourceKey.create(Registries.BLOCK, TELEVISION_ID);
+    public static final ResourceKey<Item> TELEVISION_ITEM_KEY =
+            ResourceKey.create(Registries.ITEM, TELEVISION_ID);
+
+    public static final TelevisionBlock TELEVISION = new TelevisionBlock(
+            BlockBehaviour.Properties.of()
+                    .setId(TELEVISION_BLOCK_KEY)
+                    .strength(2.5F, 6.0F)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+    );
+
+    public static final Item TELEVISION_ITEM = new BlockItem(
+            TELEVISION,
+            new Item.Properties().setId(TELEVISION_ITEM_KEY)
+    );
+
+    public static Identifier id(String path) {
+        return Identifier.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    @Override
+    public void onInitialize() {
+        Registry.register(BuiltInRegistries.BLOCK, TELEVISION_ID, TELEVISION);
+        Registry.register(BuiltInRegistries.ITEM, TELEVISION_ID, TELEVISION_ITEM);
+
+        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
+                .register(entries -> entries.accept(TELEVISION_ITEM));
+
+        PayloadTypeRegistry.serverboundPlay().register(SetChannelPayload.TYPE, SetChannelPayload.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(SetChannelPayload.TYPE, (payload, context) ->
+                context.server().execute(() -> applyChannel(context.player(), payload))
+        );
+    }
+
+    private static void applyChannel(ServerPlayer player, SetChannelPayload payload) {
+        if (!(player.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        BlockPos pos = payload.pos();
+        if (!level.isLoaded(pos) || player.distanceToSqr(Vec3.atCenterOf(pos)) > 64.0D) {
+            return;
+        }
+
+        BlockState state = level.getBlockState(pos);
+        if (state.is(TELEVISION)) {
+            level.setBlock(pos, state.setValue(TelevisionBlock.CHANNEL, payload.channel()), Block.UPDATE_ALL);
+        }
+    }
+}

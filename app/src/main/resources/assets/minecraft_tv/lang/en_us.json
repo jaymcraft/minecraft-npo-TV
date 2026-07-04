@@ -1,0 +1,15 @@
+{
+  "block.minecraft_tv.television": "Television",
+  "item.minecraft_tv.television": "Television",
+  "screen.minecraft_tv.television": "Television",
+  "screen.minecraft_tv.current_channel": "Channel: %s",
+  "button.minecraft_tv.npo1": "NPO 1",
+  "button.minecraft_tv.npo2": "NPO 2",
+  "button.minecraft_tv.npo3": "NPO 3",
+  "button.minecraft_tv.off": "Off",
+  "button.minecraft_tv.open_stream": "Open stream",
+  "channel.minecraft_tv.off": "Off",
+  "channel.minecraft_tv.npo1": "NPO 1",
+  "channel.minecraft_tv.npo2": "NPO 2",
+  "channel.minecraft_tv.npo3": "NPO 3"
+}

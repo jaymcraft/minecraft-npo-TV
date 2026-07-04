@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "III",
+    "GRG",
+    "SSS"
+  ],
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "G": "minecraft:glass_pane",
+    "R": "minecraft:redstone",
+    "S": "minecraft:smooth_stone"
+  },
+  "result": {
+    "id": "minecraft_tv:television",
+    "count": 1
+  }
+}
