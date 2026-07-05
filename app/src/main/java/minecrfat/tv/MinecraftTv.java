@@ -79,8 +79,19 @@ public class MinecraftTv implements ModInitializer {
         }
 
         BlockState state = level.getBlockState(pos);
-        if (state.is(TELEVISION)) {
-            level.setBlock(pos, state.setValue(TelevisionBlock.CHANNEL, payload.channel()), Block.UPDATE_ALL);
+        if (!state.is(TELEVISION)) {
+            return;
+        }
+
+        TelevisionWall wall = TelevisionWall.find(level, pos, state);
+        for (BlockPos wallPos : wall.positions()) {
+            if (!level.isLoaded(wallPos)) {
+                continue;
+            }
+            BlockState wallState = level.getBlockState(wallPos);
+            if (wallState.is(TELEVISION) && wallState.getValue(TelevisionBlock.FACING) == wall.facing()) {
+                level.setBlock(wallPos, wallState.setValue(TelevisionBlock.CHANNEL, payload.channel()), Block.UPDATE_ALL);
+            }
         }
     }
 }

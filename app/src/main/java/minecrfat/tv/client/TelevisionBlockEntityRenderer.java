@@ -2,9 +2,11 @@ package minecrfat.tv.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import minecrfat.tv.MinecraftTv;
 import minecrfat.tv.TelevisionBlock;
 import minecrfat.tv.TelevisionBlockEntity;
 import minecrfat.tv.TelevisionChannel;
+import minecrfat.tv.TelevisionWall;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -21,6 +23,9 @@ public class TelevisionBlockEntityRenderer implements BlockEntityRenderer<Televi
     private static final float MIN = 0.002F;
     private static final float MAX = 0.998F;
     private static final float OUT = 0.003F;
+    private static final Identifier NPO1_FALLBACK = MinecraftTv.id("textures/block/tv_screen_npo1.png");
+    private static final Identifier NPO2_FALLBACK = MinecraftTv.id("textures/block/tv_screen_npo2.png");
+    private static final Identifier NPO3_FALLBACK = MinecraftTv.id("textures/block/tv_screen_npo3.png");
 
     public TelevisionBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -34,24 +39,39 @@ public class TelevisionBlockEntityRenderer implements BlockEntityRenderer<Televi
     public void extractRenderState(TelevisionBlockEntity blockEntity, TelevisionBlockEntityRenderState renderState, float tickDelta, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay) {
         BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, tickDelta, cameraPos, crumblingOverlay);
         BlockState blockState = blockEntity.getBlockState();
+        TelevisionWall wall = TelevisionWall.find(blockEntity.getLevel(), blockEntity.getBlockPos(), blockState);
+
         renderState.facing = blockState.getValue(TelevisionBlock.FACING);
         renderState.channel = blockState.getValue(TelevisionBlock.CHANNEL);
-        renderState.liveTexture = TelevisionStreamManager.liveTexture(blockEntity.getBlockPos(), renderState.channel);
+        renderState.wallOrigin = wall.origin();
+        renderState.wallWidth = wall.width();
+        renderState.wallHeight = wall.height();
+        renderState.wallColumn = wall.column(blockEntity.getBlockPos());
+        renderState.wallRow = wall.row(blockEntity.getBlockPos());
+        renderState.liveTexture = TelevisionStreamManager.liveTexture(blockEntity.getBlockPos(), renderState.channel, wall);
     }
 
     @Override
     public void submit(TelevisionBlockEntityRenderState renderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState) {
-        Identifier texture = renderState.liveTexture;
-        if (texture == null || renderState.channel == TelevisionChannel.OFF) {
+        if (renderState.channel == TelevisionChannel.OFF) {
+            return;
+        }
+
+        Identifier texture = renderState.liveTexture != null ? renderState.liveTexture : fallbackTexture(renderState.channel);
+        if (texture == null) {
             return;
         }
 
         int light = renderState.lightCoords;
         Direction facing = renderState.facing;
+        float uMin = (float) renderState.wallColumn / (float) renderState.wallWidth;
+        float uMax = (float) (renderState.wallColumn + 1) / (float) renderState.wallWidth;
+        float vMin = 1.0F - (float) (renderState.wallRow + 1) / (float) renderState.wallHeight;
+        float vMax = 1.0F - (float) renderState.wallRow / (float) renderState.wallHeight;
         submitNodeCollector.submitCustomGeometry(
                 poseStack,
                 RenderTypes.entityCutout(texture),
-                (pose, consumer) -> drawScreenQuad(pose, consumer, facing, light)
+                (pose, consumer) -> drawScreenQuad(pose, consumer, facing, light, uMin, uMax, vMin, vMax)
         );
     }
 
@@ -60,35 +80,45 @@ public class TelevisionBlockEntityRenderer implements BlockEntityRenderer<Televi
         return 64;
     }
 
-    private static void drawScreenQuad(PoseStack.Pose pose, VertexConsumer consumer, Direction facing, int light) {
+    private static Identifier fallbackTexture(TelevisionChannel channel) {
+        return switch (channel) {
+            case NPO1 -> NPO1_FALLBACK;
+            case NPO2 -> NPO2_FALLBACK;
+            case NPO3 -> NPO3_FALLBACK;
+            case OFF -> null;
+        };
+    }
+
+    private static void drawScreenQuad(PoseStack.Pose pose, VertexConsumer consumer, Direction facing, int light,
+                                       float uMin, float uMax, float vMin, float vMax) {
         switch (facing) {
             case NORTH -> {
                 float z = -OUT;
-                vertex(pose, consumer, MIN, MIN, z, 1.0F, 1.0F, light, 0.0F, 0.0F, -1.0F);
-                vertex(pose, consumer, MAX, MIN, z, 0.0F, 1.0F, light, 0.0F, 0.0F, -1.0F);
-                vertex(pose, consumer, MAX, MAX, z, 0.0F, 0.0F, light, 0.0F, 0.0F, -1.0F);
-                vertex(pose, consumer, MIN, MAX, z, 1.0F, 0.0F, light, 0.0F, 0.0F, -1.0F);
+                vertex(pose, consumer, MIN, MIN, z, 1.0F - uMin, vMax, light, 0.0F, 0.0F, -1.0F);
+                vertex(pose, consumer, MAX, MIN, z, 1.0F - uMax, vMax, light, 0.0F, 0.0F, -1.0F);
+                vertex(pose, consumer, MAX, MAX, z, 1.0F - uMax, vMin, light, 0.0F, 0.0F, -1.0F);
+                vertex(pose, consumer, MIN, MAX, z, 1.0F - uMin, vMin, light, 0.0F, 0.0F, -1.0F);
             }
             case SOUTH -> {
                 float z = 1.0F + OUT;
-                vertex(pose, consumer, MAX, MIN, z, 1.0F, 1.0F, light, 0.0F, 0.0F, 1.0F);
-                vertex(pose, consumer, MIN, MIN, z, 0.0F, 1.0F, light, 0.0F, 0.0F, 1.0F);
-                vertex(pose, consumer, MIN, MAX, z, 0.0F, 0.0F, light, 0.0F, 0.0F, 1.0F);
-                vertex(pose, consumer, MAX, MAX, z, 1.0F, 0.0F, light, 0.0F, 0.0F, 1.0F);
+                vertex(pose, consumer, MAX, MIN, z, uMax, vMax, light, 0.0F, 0.0F, 1.0F);
+                vertex(pose, consumer, MIN, MIN, z, uMin, vMax, light, 0.0F, 0.0F, 1.0F);
+                vertex(pose, consumer, MIN, MAX, z, uMin, vMin, light, 0.0F, 0.0F, 1.0F);
+                vertex(pose, consumer, MAX, MAX, z, uMax, vMin, light, 0.0F, 0.0F, 1.0F);
             }
             case WEST -> {
                 float x = -OUT;
-                vertex(pose, consumer, x, MIN, MAX, 1.0F, 1.0F, light, -1.0F, 0.0F, 0.0F);
-                vertex(pose, consumer, x, MIN, MIN, 0.0F, 1.0F, light, -1.0F, 0.0F, 0.0F);
-                vertex(pose, consumer, x, MAX, MIN, 0.0F, 0.0F, light, -1.0F, 0.0F, 0.0F);
-                vertex(pose, consumer, x, MAX, MAX, 1.0F, 0.0F, light, -1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MIN, MAX, uMax, vMax, light, -1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MIN, MIN, uMin, vMax, light, -1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MAX, MIN, uMin, vMin, light, -1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MAX, MAX, uMax, vMin, light, -1.0F, 0.0F, 0.0F);
             }
             case EAST -> {
                 float x = 1.0F + OUT;
-                vertex(pose, consumer, x, MIN, MIN, 1.0F, 1.0F, light, 1.0F, 0.0F, 0.0F);
-                vertex(pose, consumer, x, MIN, MAX, 0.0F, 1.0F, light, 1.0F, 0.0F, 0.0F);
-                vertex(pose, consumer, x, MAX, MAX, 0.0F, 0.0F, light, 1.0F, 0.0F, 0.0F);
-                vertex(pose, consumer, x, MAX, MIN, 1.0F, 0.0F, light, 1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MIN, MIN, 1.0F - uMin, vMax, light, 1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MIN, MAX, 1.0F - uMax, vMax, light, 1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MAX, MAX, 1.0F - uMax, vMin, light, 1.0F, 0.0F, 0.0F);
+                vertex(pose, consumer, x, MAX, MIN, 1.0F - uMin, vMin, light, 1.0F, 0.0F, 0.0F);
             }
             default -> {
             }

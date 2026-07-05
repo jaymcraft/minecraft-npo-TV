@@ -3,19 +3,25 @@ package minecrfat.tv.client;
 import com.mojang.blaze3d.platform.NativeImage;
 import minecrfat.tv.MinecraftTv;
 import minecrfat.tv.TelevisionChannel;
+import minecrfat.tv.TelevisionWall;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public final class TelevisionStreamManager {
     private static final int FRAME_WIDTH = 256;
     private static final int FRAME_HEIGHT = 144;
-    private static final Map<BlockPos, StreamSession> SESSIONS = new HashMap<>();
+    private static final Map<WallKey, StreamSession> SESSIONS = new HashMap<>();
 
     private TelevisionStreamManager() {
     }
@@ -32,27 +38,34 @@ public final class TelevisionStreamManager {
         if (url.isBlank()) {
             return TelevisionPlaybackStatus.NO_STREAM_CONFIGURED;
         }
-        StreamSession session = SESSIONS.get(pos);
+
+        TelevisionWall wall = findClientWall(pos);
+        WallKey key = wall == null ? WallKey.single(pos) : WallKey.from(wall);
+        StreamSession session = SESSIONS.get(key);
         return session == null ? TelevisionPlaybackStatus.FALLBACK : session.status();
     }
 
-    public static Identifier liveTexture(BlockPos pos, TelevisionChannel channel) {
+    public static Identifier liveTexture(BlockPos pos, TelevisionChannel channel, TelevisionWall wall) {
         if (channel == TelevisionChannel.OFF) {
-            stop(pos);
+            stop(wall);
             return null;
         }
 
         String url = TelevisionStreamConfig.streamUrl(channel);
         if (url.isBlank()) {
-            stop(pos);
+            stop(wall);
             return null;
         }
 
-        StreamSession session = SESSIONS.get(pos);
+        WallKey key = WallKey.from(wall);
+        Set<BlockPos> positions = new HashSet<>(wall.positions());
+        stopOverlappingSessions(key, positions);
+
+        StreamSession session = SESSIONS.get(key);
         if (session == null || session.channel() != channel || !session.url().equals(url)) {
-            stop(pos);
-            session = new StreamSession(pos, channel, url);
-            SESSIONS.put(pos.immutable(), session);
+            stop(wall);
+            session = new StreamSession(key, positions, channel, url);
+            SESSIONS.put(key, session);
             session.start();
         }
 
@@ -61,32 +74,80 @@ public final class TelevisionStreamManager {
     }
 
     public static void stop(BlockPos pos) {
-        StreamSession removed = SESSIONS.remove(pos);
+        Level level = Minecraft.getInstance().level;
+        if (level == null) {
+            return;
+        }
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(MinecraftTv.TELEVISION)) {
+            return;
+        }
+        stop(TelevisionWall.find(level, pos, state));
+    }
+
+    public static void stop(TelevisionWall wall) {
+        StreamSession removed = SESSIONS.remove(WallKey.from(wall));
         if (removed != null) {
             removed.close();
         }
     }
 
     public static void stopUnused(Iterable<BlockPos> activePositions) {
-        Iterator<Map.Entry<BlockPos, StreamSession>> iterator = SESSIONS.entrySet().iterator();
+        Set<BlockPos> active = new HashSet<>();
+        for (BlockPos pos : activePositions) {
+            active.add(pos.immutable());
+        }
+
+        Iterator<Map.Entry<WallKey, StreamSession>> iterator = SESSIONS.entrySet().iterator();
         while (iterator.hasNext()) {
-            Map.Entry<BlockPos, StreamSession> entry = iterator.next();
-            boolean active = false;
-            for (BlockPos pos : activePositions) {
-                if (entry.getKey().equals(pos)) {
-                    active = true;
-                    break;
-                }
-            }
-            if (!active) {
+            Map.Entry<WallKey, StreamSession> entry = iterator.next();
+            if (!entry.getValue().intersects(active)) {
                 entry.getValue().close();
                 iterator.remove();
             }
         }
     }
 
+    private static TelevisionWall findClientWall(BlockPos pos) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) {
+            return null;
+        }
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(MinecraftTv.TELEVISION)) {
+            return null;
+        }
+        return TelevisionWall.find(level, pos, state);
+    }
+
+    private static void stopOverlappingSessions(WallKey key, Set<BlockPos> positions) {
+        Iterator<Map.Entry<WallKey, StreamSession>> iterator = SESSIONS.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<WallKey, StreamSession> entry = iterator.next();
+            if (!entry.getKey().equals(key) && entry.getValue().intersects(positions)) {
+                entry.getValue().close();
+                iterator.remove();
+            }
+        }
+    }
+
+    private record WallKey(BlockPos origin, Direction facing) {
+        private static WallKey from(TelevisionWall wall) {
+            return new WallKey(wall.origin().immutable(), wall.facing());
+        }
+
+        private static WallKey single(BlockPos pos) {
+            return new WallKey(pos.immutable(), Direction.NORTH);
+        }
+
+        private String id() {
+            return origin.getX() + "_" + origin.getY() + "_" + origin.getZ() + "_" + facing.getSerializedName();
+        }
+    }
+
     private static final class StreamSession implements AutoCloseable {
-        private final BlockPos pos;
+        private final WallKey key;
+        private final Set<BlockPos> positions;
         private final TelevisionChannel channel;
         private final String url;
         private final Identifier textureId;
@@ -96,13 +157,14 @@ public final class TelevisionStreamManager {
         private volatile int[] pendingFrame;
         private boolean hasFrame;
 
-        private StreamSession(BlockPos pos, TelevisionChannel channel, String url) {
-            this.pos = pos.immutable();
+        private StreamSession(WallKey key, Set<BlockPos> positions, TelevisionChannel channel, String url) {
+            this.key = key;
+            this.positions = Set.copyOf(positions);
             this.channel = channel;
             this.url = url;
-            this.textureId = MinecraftTv.id("dynamic/television/" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ());
+            this.textureId = MinecraftTv.id("dynamic/television_wall/" + key.id());
             this.image = new NativeImage(FRAME_WIDTH, FRAME_HEIGHT, false);
-            this.texture = new DynamicTexture(() -> "Minecraft TV " + pos.toShortString(), image);
+            this.texture = new DynamicTexture(() -> "Minecraft TV Wall " + key.id(), image);
             Minecraft.getInstance().getTextureManager().register(textureId, texture);
             this.player = new VlcjStreamPlayer(FRAME_WIDTH, FRAME_HEIGHT, this::receiveFrame);
         }
@@ -128,6 +190,15 @@ public final class TelevisionStreamManager {
                 return TelevisionPlaybackStatus.STARTING;
             }
             return player.status();
+        }
+
+        private boolean intersects(Set<BlockPos> otherPositions) {
+            for (BlockPos pos : positions) {
+                if (otherPositions.contains(pos)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void start() {
