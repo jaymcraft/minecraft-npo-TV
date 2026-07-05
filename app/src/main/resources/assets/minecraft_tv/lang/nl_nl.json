@@ -11,5 +11,13 @@
   "channel.minecraft_tv.off": "Uit",
   "channel.minecraft_tv.npo1": "NPO 1",
   "channel.minecraft_tv.npo2": "NPO 2",
-  "channel.minecraft_tv.npo3": "NPO 3"
+  "channel.minecraft_tv.npo3": "NPO 3",
+  "screen.minecraft_tv.playback_status": "Status: %s",
+  "status.minecraft_tv.off": "Uit",
+  "status.minecraft_tv.fallback": "Fallback beeld",
+  "status.minecraft_tv.no_stream_configured": "Geen directe stream ingesteld",
+  "status.minecraft_tv.vlc_not_found": "VLC/libVLC niet gevonden",
+  "status.minecraft_tv.starting": "Stream starten...",
+  "status.minecraft_tv.live": "Live",
+  "status.minecraft_tv.error": "Streamfout"
 }

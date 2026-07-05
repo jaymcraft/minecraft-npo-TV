@@ -63,6 +63,14 @@ public class TelevisionScreen extends Screen {
                 height / 2 - 72,
                 0xA0D8FF
         );
+        TelevisionPlaybackStatus status = TelevisionStreamManager.status(pos, selectedChannel);
+        graphics.centeredText(
+                font,
+                Component.translatable("screen.minecraft_tv.playback_status", Component.translatable(status.translationKey())),
+                width / 2,
+                height / 2 - 60,
+                0xD6E8FF
+        );
         super.extractRenderState(graphics, mouseX, mouseY, delta);
     }
 }

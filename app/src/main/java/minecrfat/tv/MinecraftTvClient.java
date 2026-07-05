@@ -1,7 +1,10 @@
 package minecrfat.tv;
 
+import minecrfat.tv.client.TelevisionBlockEntityRenderer;
 import minecrfat.tv.client.TelevisionScreen;
+import minecrfat.tv.client.TelevisionStreamManager;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionResult;
@@ -9,6 +12,9 @@ import net.minecraft.world.InteractionResult;
 public class MinecraftTvClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        TelevisionStreamManager.loadConfig();
+        BlockEntityRendererRegistry.register(MinecraftTv.TELEVISION_BLOCK_ENTITY, TelevisionBlockEntityRenderer::new);
+
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (!world.isClientSide()) {
                 return InteractionResult.PASS;

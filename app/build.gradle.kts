@@ -29,6 +29,12 @@ dependencies {
     mappings(files("mappings/official-named.jar"))
     modImplementation("net.fabricmc:fabric-loader:0.19.2")
     modImplementation("net.fabricmc.fabric-api:fabric-api:0.154.0+26.2")
+
+    implementation("uk.co.caprica:vlcj:4.8.3")
+    include("uk.co.caprica:vlcj:4.8.3")
+    include("uk.co.caprica:vlcj-natives:4.8.3")
+    include("net.java.dev.jna:jna:5.14.0")
+    include("net.java.dev.jna:jna-platform:5.14.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {

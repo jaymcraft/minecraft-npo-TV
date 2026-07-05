@@ -5,6 +5,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,6 +19,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -25,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 public class MinecraftTv implements ModInitializer {
     public static final String MOD_ID = "minecraft_tv";
     public static final Identifier TELEVISION_ID = id("television");
+    public static final Identifier TELEVISION_BLOCK_ENTITY_ID = id("television");
     public static final ResourceKey<Block> TELEVISION_BLOCK_KEY =
             ResourceKey.create(Registries.BLOCK, TELEVISION_ID);
     public static final ResourceKey<Item> TELEVISION_ITEM_KEY =
@@ -43,6 +46,9 @@ public class MinecraftTv implements ModInitializer {
             new Item.Properties().setId(TELEVISION_ITEM_KEY)
     );
 
+    public static final BlockEntityType<TelevisionBlockEntity> TELEVISION_BLOCK_ENTITY =
+            FabricBlockEntityTypeBuilder.create(TelevisionBlockEntity::new, TELEVISION).build();
+
     public static Identifier id(String path) {
         return Identifier.fromNamespaceAndPath(MOD_ID, path);
     }
@@ -51,6 +57,7 @@ public class MinecraftTv implements ModInitializer {
     public void onInitialize() {
         Registry.register(BuiltInRegistries.BLOCK, TELEVISION_ID, TELEVISION);
         Registry.register(BuiltInRegistries.ITEM, TELEVISION_ID, TELEVISION_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, TELEVISION_BLOCK_ENTITY_ID, TELEVISION_BLOCK_ENTITY);
 
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
                 .register(entries -> entries.accept(TELEVISION_ITEM));
