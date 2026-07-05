@@ -26,6 +26,7 @@ public class TelevisionBlockEntityRenderer implements BlockEntityRenderer<Televi
     private static final Identifier NPO1_FALLBACK = MinecraftTv.id("textures/block/tv_screen_npo1.png");
     private static final Identifier NPO2_FALLBACK = MinecraftTv.id("textures/block/tv_screen_npo2.png");
     private static final Identifier NPO3_FALLBACK = MinecraftTv.id("textures/block/tv_screen_npo3.png");
+    private static final Identifier CUSTOM_FALLBACK = MinecraftTv.id("textures/block/tv_screen_custom.png");
 
     public TelevisionBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
     }
@@ -85,6 +86,7 @@ public class TelevisionBlockEntityRenderer implements BlockEntityRenderer<Televi
             case NPO1 -> NPO1_FALLBACK;
             case NPO2 -> NPO2_FALLBACK;
             case NPO3 -> NPO3_FALLBACK;
+            case CUSTOM -> CUSTOM_FALLBACK;
             case OFF -> null;
         };
     }

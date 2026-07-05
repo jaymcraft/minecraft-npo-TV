@@ -19,5 +19,7 @@
   "status.minecraft_tv.vlc_not_found": "VLC/libVLC not found",
   "status.minecraft_tv.starting": "Starting stream...",
   "status.minecraft_tv.live": "Live",
-  "status.minecraft_tv.error": "Stream error"
+  "status.minecraft_tv.error": "Stream error",
+  "button.minecraft_tv.custom": "Custom",
+  "channel.minecraft_tv.custom": "Custom"
 }

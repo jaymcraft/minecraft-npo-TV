@@ -28,10 +28,11 @@ public class TelevisionScreen extends Screen {
         addChannelButton(centerX - 102, top, TelevisionChannel.NPO1, "button.minecraft_tv.npo1");
         addChannelButton(centerX + 2, top, TelevisionChannel.NPO2, "button.minecraft_tv.npo2");
         addChannelButton(centerX - 102, top + 24, TelevisionChannel.NPO3, "button.minecraft_tv.npo3");
-        addChannelButton(centerX + 2, top + 24, TelevisionChannel.OFF, "button.minecraft_tv.off");
+        addChannelButton(centerX + 2, top + 24, TelevisionChannel.CUSTOM, "button.minecraft_tv.custom");
+        addChannelButton(centerX - 102, top + 48, TelevisionChannel.OFF, "button.minecraft_tv.off");
 
         addRenderableWidget(Button.builder(Component.translatable("button.minecraft_tv.open_stream"), button -> openStream())
-                .bounds(centerX - 102, top + 58, 204, 20)
+                .bounds(centerX - 102, top + 82, 204, 20)
                 .build());
     }
 
@@ -47,8 +48,11 @@ public class TelevisionScreen extends Screen {
     }
 
     private void openStream() {
-        if (selectedChannel.hasStream()) {
-            Util.getPlatform().openUri(selectedChannel.url());
+        String url = selectedChannel == TelevisionChannel.CUSTOM
+                ? TelevisionStreamConfig.streamUrl(selectedChannel)
+                : selectedChannel.url();
+        if (!url.isBlank()) {
+            Util.getPlatform().openUri(url);
         }
     }
 

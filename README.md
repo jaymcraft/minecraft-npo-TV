@@ -1,6 +1,6 @@
 # Minecraft NPO TV
 
-Minecraft NPO TV is een Fabric mod voor Minecraft Java 26.2. De mod voegt een plaatsbare televisie toe waarmee je in-game NPO 1, NPO 2 en NPO 3 kunt kiezen.
+Minecraft NPO TV is een Fabric mod voor Minecraft Java 26.2. De mod voegt een plaatsbare televisie toe waarmee je in-game NPO 1, NPO 2, NPO 3 en een custom kanaal kunt kiezen.
 
 De TV heeft twee manieren om te kijken:
 
@@ -12,8 +12,8 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 ## Features
 
 - Block/item id: `minecraft_tv:television`
-- GUI met knoppen voor `NPO 1`, `NPO 2`, `NPO 3`, `Uit` en `Open stream`
-- Kanaalstatus op het block: `off`, `npo1`, `npo2`, `npo3`
+- GUI met knoppen voor `NPO 1`, `NPO 2`, `NPO 3`, `Custom`, `Uit` en `Open stream`
+- Kanaalstatus op het block: `off`, `npo1`, `npo2`, `npo3`, `custom`
 - Multiplayer-safe channel updates via server packet `minecraft_tv:set_channel`
 - Client-side stream playback met VLCJ/libVLC
 - Fallback textures als er geen stream is of VLC niet werkt
@@ -42,8 +42,8 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 
 3. Plaats de TV.
 4. Rechtermuisklik op de TV.
-5. Kies `NPO 1`, `NPO 2`, `NPO 3` of `Uit`.
-6. Gebruik `Open stream` om de officiele NPO-pagina in je browser te openen.
+5. Kies `NPO 1`, `NPO 2`, `NPO 3`, `Custom` of `Uit`.
+6. Gebruik `Open stream` om de officiele NPO-pagina of de ingestelde custom URL in je browser te openen.
 
 ## Grote TV-Muur
 
@@ -70,10 +70,11 @@ Voor echte in-game video moet je daar directe media-URL's invullen, bijvoorbeeld
 ```properties
 npo1=
 npo2=
-npo3=https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+npo3=
+custom=https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
 ```
 
-Belangrijk: een gewone webpagina zoals `https://npo.nl/start/live/npo3` werkt hier niet. De mod heeft een directe `.m3u8`, `.mp4` of vergelijkbare media-URL nodig.
+Belangrijk: `custom=` is bedoeld voor een directe media-URL. Een gewone webpagina zoals `https://npo.nl/start/live/npo3` of een normale YouTube-link werkt hier niet betrouwbaar. De mod heeft een directe `.m3u8`, `.mp4` of vergelijkbare media-URL nodig.
 
 NPO's eigen livestreams kunnen DRM gebruiken. Een DRM-beveiligde NPO `.m3u8` lijkt op een stream-URL, maar VLC kan die meestal niet afspelen zonder de officiele NPO-player/licentieflow. Gebruik dan de knop `Open stream`.
 

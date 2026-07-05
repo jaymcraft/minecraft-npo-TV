@@ -51,6 +51,7 @@ public final class TelevisionStreamConfig {
         defaults.setProperty("npo1", "");
         defaults.setProperty("npo2", "");
         defaults.setProperty("npo3", "");
+        defaults.setProperty("custom", "");
 
         try {
             Files.createDirectories(path.getParent());

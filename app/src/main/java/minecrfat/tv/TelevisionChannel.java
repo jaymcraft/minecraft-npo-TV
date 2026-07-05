@@ -8,7 +8,8 @@ public enum TelevisionChannel implements StringRepresentable {
     OFF("off", ""),
     NPO1("npo1", "https://www.npo.nl/live/npo-1"),
     NPO2("npo2", "https://www.npo.nl/live/npo-2"),
-    NPO3("npo3", "https://www.npo.nl/live/npo-3");
+    NPO3("npo3", "https://www.npo.nl/live/npo-3"),
+    CUSTOM("custom", "");
 
     private final String name;
     private final String url;
