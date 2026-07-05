@@ -54,7 +54,16 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 
 De mod voegt `minecraft_tv:tv_speaker` toe. De speaker werkt als decoratief blok totdat je hem met redstone dust aan een TV of TV-muur koppelt. De redstone hoeft niet powered te zijn; dust telt hier als kabel.
 
+Zo koppel je een speaker:
+
+1. Plaats een TV of TV-muur.
+2. Plaats `minecraft_tv:tv_speaker` ergens in de buurt.
+3. Leg redstone dust tussen de speaker en minstens een TV-blok van de muur.
+4. Open de TV-GUI. Daar zie je `Speaker: verbonden` als de kabel gevonden is.
+
 Als minstens een speaker via zo'n redstone-dust pad verbonden is, krijgt die TV of TV-muur lokaal `+20%` volume, met een maximum van `100%`. De volume slider blijft de basisinstelling en de boost wordt alleen op de client toegepast. Servers beheren geen audio.
+
+Voorbeeld: als de slider op `50%` staat en de speaker verbonden is, speelt de TV effectief op `70%`. Haal je de redstone dust weg, dan verdwijnt de boost vanzelf.
 
 ## Afstandsbediening
 
@@ -127,6 +136,7 @@ GitHub bouwt automatisch bij push naar `main`, bij pull requests en via handmati
 - Custom kanaal speelt niet: controleer dat `custom=` een directe `.m3u8`, `.mp4` of andere media-URL bevat.
 - NPO- of YouTube-webpagina's werken niet als directe stream; gebruik daarvoor `Open stream` in de browser.
 - VLC/libVLC ontbreekt of werkt niet: de mod crasht niet, maar toont het statische fallback scherm.
+- TV Speaker geeft geen boost: controleer dat er redstone dust tussen speaker en TV ligt. De dust hoeft niet powered te zijn, maar de speaker werkt niet zonder dust-kabel.
 
 ## Technische Details
 
