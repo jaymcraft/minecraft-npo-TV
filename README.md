@@ -62,7 +62,7 @@ Als je op een TV in de muur een kanaal kiest, schakelt de hele muur mee. Voor li
 Na de eerste start maakt de mod dit config-bestand aan:
 
 ```text
-/Users/jayden/Library/Application Support/minecraft/config/minecraft_tv_streams.properties
+config/minecraft_tv_streams.properties
 ```
 
 Voor echte in-game video moet je daar directe media-URL's invullen, bijvoorbeeld een vrije HLS teststream:
