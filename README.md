@@ -13,6 +13,8 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 
 - Block/item id: `minecraft_tv:television`
 - GUI met knoppen voor `NPO 1`, `NPO 2`, `NPO 3`, `Custom`, `Uit` en `Open stream`
+- Afstandsbediening item om een TV binnen 16 blokken te openen
+- Volume slider per TV of TV-muur op de client
 - Kanaalstatus op het block: `off`, `npo1`, `npo2`, `npo3`, `custom`
 - Multiplayer-safe channel updates via server packet `minecraft_tv:set_channel`
 - Client-side stream playback met VLCJ/libVLC
@@ -43,7 +45,12 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 3. Plaats de TV.
 4. Rechtermuisklik op de TV.
 5. Kies `NPO 1`, `NPO 2`, `NPO 3`, `Custom` of `Uit`.
-6. Gebruik `Open stream` om de officiele NPO-pagina of de ingestelde custom URL in je browser te openen.
+6. Gebruik de volume slider om het lokale VLC-volume voor deze TV of TV-muur te wijzigen.
+7. Gebruik `Open stream` om de officiele NPO-pagina of de ingestelde custom URL in je browser te openen.
+
+## Afstandsbediening
+
+De mod voegt ook `minecraft_tv:remote_control` toe. Houd de afstandsbediening vast, kijk naar een TV binnen 16 blokken en rechtermuisklik om dezelfde TV-GUI te openen. Dit werkt client-side; kanaalwissels blijven via het bestaande server packet lopen.
 
 ## Grote TV-Muur
 
@@ -127,5 +134,5 @@ GitHub bouwt automatisch bij push naar `main`, bij pull requests en via handmati
 
 - De mod bevat geen echte videodecoder van zichzelf; live playback gebruikt VLCJ/libVLC.
 - Dedicated servers spelen nooit video of audio af.
-- Elke client speelt streams lokaal af.
+- Elke client speelt streams lokaal af. Volume is lokaal per client en wordt niet door de server beheerd.
 - Officiele NPO-webpagina's, redirects, DRM, login en geo-restricties worden door NPO bepaald.

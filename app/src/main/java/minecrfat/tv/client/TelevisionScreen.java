@@ -24,15 +24,24 @@ public class TelevisionScreen extends Screen {
     @Override
     protected void init() {
         int centerX = width / 2;
-        int top = height / 2 - 56;
+        int top = height / 2 - 68;
         addChannelButton(centerX - 102, top, TelevisionChannel.NPO1, "button.minecraft_tv.npo1");
         addChannelButton(centerX + 2, top, TelevisionChannel.NPO2, "button.minecraft_tv.npo2");
         addChannelButton(centerX - 102, top + 24, TelevisionChannel.NPO3, "button.minecraft_tv.npo3");
         addChannelButton(centerX + 2, top + 24, TelevisionChannel.CUSTOM, "button.minecraft_tv.custom");
         addChannelButton(centerX - 102, top + 48, TelevisionChannel.OFF, "button.minecraft_tv.off");
 
+        addRenderableWidget(new TelevisionVolumeSlider(
+                centerX - 102,
+                top + 74,
+                204,
+                20,
+                pos,
+                TelevisionStreamManager.volume(pos)
+        ));
+
         addRenderableWidget(Button.builder(Component.translatable("button.minecraft_tv.open_stream"), button -> openStream())
-                .bounds(centerX - 102, top + 82, 204, 20)
+                .bounds(centerX - 102, top + 100, 204, 20)
                 .build());
     }
 
@@ -58,13 +67,13 @@ public class TelevisionScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
-        graphics.centeredText(font, title, width / 2, height / 2 - 88, 0xFFFFFF);
+        graphics.centeredText(font, title, width / 2, height / 2 - 100, 0xFFFFFF);
         graphics.centeredText(
                 font,
                 Component.translatable("screen.minecraft_tv.current_channel",
                         Component.translatable("channel." + MinecraftTv.MOD_ID + "." + selectedChannel.getSerializedName())),
                 width / 2,
-                height / 2 - 72,
+                height / 2 - 84,
                 0xA0D8FF
         );
         TelevisionPlaybackStatus status = TelevisionStreamManager.status(pos, selectedChannel);
@@ -72,7 +81,7 @@ public class TelevisionScreen extends Screen {
                 font,
                 Component.translatable("screen.minecraft_tv.playback_status", Component.translatable(status.translationKey())),
                 width / 2,
-                height / 2 - 60,
+                height / 2 - 72,
                 0xD6E8FF
         );
         super.extractRenderState(graphics, mouseX, mouseY, delta);

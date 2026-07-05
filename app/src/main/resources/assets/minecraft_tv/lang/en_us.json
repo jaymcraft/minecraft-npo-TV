@@ -21,5 +21,7 @@
   "status.minecraft_tv.live": "Live",
   "status.minecraft_tv.error": "Stream error",
   "button.minecraft_tv.custom": "Custom",
-  "channel.minecraft_tv.custom": "Custom"
+  "channel.minecraft_tv.custom": "Custom",
+  "item.minecraft_tv.remote_control": "Remote Control",
+  "slider.minecraft_tv.volume": "Volume: %s%%"
 }

@@ -21,7 +21,9 @@ import java.util.Set;
 public final class TelevisionStreamManager {
     private static final int FRAME_WIDTH = 256;
     private static final int FRAME_HEIGHT = 144;
+    private static final int DEFAULT_VOLUME = 80;
     private static final Map<WallKey, StreamSession> SESSIONS = new HashMap<>();
+    private static final Map<WallKey, Integer> VOLUMES = new HashMap<>();
 
     private TelevisionStreamManager() {
     }
@@ -65,12 +67,30 @@ public final class TelevisionStreamManager {
         if (session == null || session.channel() != channel || !session.url().equals(url)) {
             stop(wall);
             session = new StreamSession(key, positions, channel, url);
+            session.setVolume(VOLUMES.getOrDefault(key, DEFAULT_VOLUME));
             SESSIONS.put(key, session);
             session.start();
         }
 
         session.uploadPendingFrame();
         return session.hasFrame() ? session.textureId() : null;
+    }
+
+    public static int volume(BlockPos pos) {
+        TelevisionWall wall = findClientWall(pos);
+        WallKey key = wall == null ? WallKey.single(pos) : WallKey.from(wall);
+        return VOLUMES.getOrDefault(key, DEFAULT_VOLUME);
+    }
+
+    public static void setVolume(BlockPos pos, int volume) {
+        TelevisionWall wall = findClientWall(pos);
+        WallKey key = wall == null ? WallKey.single(pos) : WallKey.from(wall);
+        int clamped = Math.clamp(volume, 0, 100);
+        VOLUMES.put(key, clamped);
+        StreamSession session = SESSIONS.get(key);
+        if (session != null) {
+            session.setVolume(clamped);
+        }
     }
 
     public static void stop(BlockPos pos) {
@@ -203,6 +223,10 @@ public final class TelevisionStreamManager {
 
         private void start() {
             player.play(url);
+        }
+
+        private void setVolume(int volume) {
+            player.setVolume(volume);
         }
 
         private void receiveFrame(int[] frame) {

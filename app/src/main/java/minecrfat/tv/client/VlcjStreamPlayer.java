@@ -19,6 +19,7 @@ public final class VlcjStreamPlayer implements AutoCloseable {
     private final Consumer<int[]> frameConsumer;
     private CallbackMediaPlayerComponent component;
     private volatile TelevisionPlaybackStatus status = TelevisionPlaybackStatus.STARTING;
+    private int volume = 80;
 
     public VlcjStreamPlayer(int width, int height, Consumer<int[]> frameConsumer) {
         this.width = width;
@@ -65,6 +66,7 @@ public final class VlcjStreamPlayer implements AutoCloseable {
 
             component = new CallbackMediaPlayerComponent(null, null, null, true, renderCallback, bufferFormatCallback, null);
             status = TelevisionPlaybackStatus.STARTING;
+            component.mediaPlayer().audio().setVolume(volume);
             component.mediaPlayer().media().play(url);
         } catch (UnsatisfiedLinkError | NoClassDefFoundError error) {
             status = TelevisionPlaybackStatus.VLC_NOT_FOUND;
@@ -77,6 +79,16 @@ public final class VlcjStreamPlayer implements AutoCloseable {
 
     public TelevisionPlaybackStatus status() {
         return status;
+    }
+
+    public void setVolume(int volume) {
+        this.volume = Math.clamp(volume, 0, 100);
+        if (component != null) {
+            try {
+                component.mediaPlayer().audio().setVolume(this.volume);
+            } catch (Throwable ignored) {
+            }
+        }
     }
 
     @Override

@@ -28,10 +28,13 @@ public class MinecraftTv implements ModInitializer {
     public static final String MOD_ID = "minecraft_tv";
     public static final Identifier TELEVISION_ID = id("television");
     public static final Identifier TELEVISION_BLOCK_ENTITY_ID = id("television");
+    public static final Identifier REMOTE_CONTROL_ID = id("remote_control");
     public static final ResourceKey<Block> TELEVISION_BLOCK_KEY =
             ResourceKey.create(Registries.BLOCK, TELEVISION_ID);
     public static final ResourceKey<Item> TELEVISION_ITEM_KEY =
             ResourceKey.create(Registries.ITEM, TELEVISION_ID);
+    public static final ResourceKey<Item> REMOTE_CONTROL_ITEM_KEY =
+            ResourceKey.create(Registries.ITEM, REMOTE_CONTROL_ID);
 
     public static final TelevisionBlock TELEVISION = new TelevisionBlock(
             BlockBehaviour.Properties.of()
@@ -46,6 +49,10 @@ public class MinecraftTv implements ModInitializer {
             new Item.Properties().setId(TELEVISION_ITEM_KEY)
     );
 
+    public static final Item REMOTE_CONTROL_ITEM = new Item(
+            new Item.Properties().setId(REMOTE_CONTROL_ITEM_KEY).stacksTo(1)
+    );
+
     public static final BlockEntityType<TelevisionBlockEntity> TELEVISION_BLOCK_ENTITY =
             FabricBlockEntityTypeBuilder.create(TelevisionBlockEntity::new, TELEVISION).build();
 
@@ -57,10 +64,14 @@ public class MinecraftTv implements ModInitializer {
     public void onInitialize() {
         Registry.register(BuiltInRegistries.BLOCK, TELEVISION_ID, TELEVISION);
         Registry.register(BuiltInRegistries.ITEM, TELEVISION_ID, TELEVISION_ITEM);
+        Registry.register(BuiltInRegistries.ITEM, REMOTE_CONTROL_ID, REMOTE_CONTROL_ITEM);
         Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, TELEVISION_BLOCK_ENTITY_ID, TELEVISION_BLOCK_ENTITY);
 
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
-                .register(entries -> entries.accept(TELEVISION_ITEM));
+                .register(entries -> {
+                    entries.accept(TELEVISION_ITEM);
+                    entries.accept(REMOTE_CONTROL_ITEM);
+                });
 
         PayloadTypeRegistry.serverboundPlay().register(SetChannelPayload.TYPE, SetChannelPayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(SetChannelPayload.TYPE, (payload, context) ->
