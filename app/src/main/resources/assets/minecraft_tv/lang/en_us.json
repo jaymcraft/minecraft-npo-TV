@@ -23,5 +23,11 @@
   "button.minecraft_tv.custom": "Custom",
   "channel.minecraft_tv.custom": "Custom",
   "item.minecraft_tv.remote_control": "Remote Control",
-  "slider.minecraft_tv.volume": "Volume: %s%%"
+  "slider.minecraft_tv.volume": "Volume: %s%%",
+  "block.minecraft_tv.tv_speaker": "TV Speaker",
+  "item.minecraft_tv.tv_speaker": "TV Speaker",
+  "screen.minecraft_tv.speaker_status": "Speaker: %s",
+  "status.minecraft_tv.speaker_connected": "connected",
+  "status.minecraft_tv.speaker_not_connected": "not connected",
+  "slider.minecraft_tv.volume_speaker": "Volume: %s%% (+ speaker)"
 }

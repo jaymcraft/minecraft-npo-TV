@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "WWW",
+    "RNR",
+    "WWW"
+  ],
+  "key": {
+    "W": "minecraft:black_wool",
+    "R": "minecraft:redstone",
+    "N": "minecraft:note_block"
+  },
+  "result": {
+    "id": "minecraft_tv:tv_speaker",
+    "count": 1
+  }
+}

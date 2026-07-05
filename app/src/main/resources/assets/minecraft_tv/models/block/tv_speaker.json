@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "top": "minecraft_tv:block/tv_speaker_side",
+    "front": "minecraft_tv:block/tv_speaker_front",
+    "side": "minecraft_tv:block/tv_speaker_side"
+  }
+}

@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.HashMap;
@@ -22,6 +23,8 @@ public final class TelevisionStreamManager {
     private static final int FRAME_WIDTH = 256;
     private static final int FRAME_HEIGHT = 144;
     private static final int DEFAULT_VOLUME = 80;
+    private static final int SPEAKER_BOOST = 20;
+    private static final int MAX_REDSTONE_STEPS = 16;
     private static final Map<WallKey, StreamSession> SESSIONS = new HashMap<>();
     private static final Map<WallKey, Integer> VOLUMES = new HashMap<>();
 
@@ -67,11 +70,12 @@ public final class TelevisionStreamManager {
         if (session == null || session.channel() != channel || !session.url().equals(url)) {
             stop(wall);
             session = new StreamSession(key, positions, channel, url);
-            session.setVolume(VOLUMES.getOrDefault(key, DEFAULT_VOLUME));
+            session.setVolume(effectiveVolume(pos));
             SESSIONS.put(key, session);
             session.start();
         }
 
+        session.setVolume(effectiveVolume(pos));
         session.uploadPendingFrame();
         return session.hasFrame() ? session.textureId() : null;
     }
@@ -82,6 +86,54 @@ public final class TelevisionStreamManager {
         return VOLUMES.getOrDefault(key, DEFAULT_VOLUME);
     }
 
+    public static int effectiveVolume(BlockPos pos) {
+        int baseVolume = volume(pos);
+        return speakerConnected(pos) ? Math.clamp(baseVolume + SPEAKER_BOOST, 0, 100) : baseVolume;
+    }
+
+    public static boolean speakerConnected(BlockPos pos) {
+        TelevisionWall wall = findClientWall(pos);
+        if (wall == null) {
+            return false;
+        }
+
+        Level level = Minecraft.getInstance().level;
+        if (level == null) {
+            return false;
+        }
+
+        Set<BlockPos> visited = new HashSet<>();
+        java.util.Queue<CableNode> queue = new java.util.ArrayDeque<>();
+        for (BlockPos tvPos : wall.positions()) {
+            for (Direction direction : Direction.values()) {
+                BlockPos cablePos = tvPos.relative(direction);
+                if (level.getBlockState(cablePos).is(Blocks.REDSTONE_WIRE) && visited.add(cablePos.immutable())) {
+                    queue.add(new CableNode(cablePos.immutable(), 1));
+                }
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            CableNode node = queue.remove();
+            if (touchesSpeaker(level, node.pos())) {
+                return true;
+            }
+            if (node.steps() >= MAX_REDSTONE_STEPS) {
+                continue;
+            }
+            for (Direction direction : Direction.values()) {
+                BlockPos next = node.pos().relative(direction);
+                if (visited.contains(next) || !level.getBlockState(next).is(Blocks.REDSTONE_WIRE)) {
+                    continue;
+                }
+                visited.add(next.immutable());
+                queue.add(new CableNode(next.immutable(), node.steps() + 1));
+            }
+        }
+
+        return false;
+    }
+
     public static void setVolume(BlockPos pos, int volume) {
         TelevisionWall wall = findClientWall(pos);
         WallKey key = wall == null ? WallKey.single(pos) : WallKey.from(wall);
@@ -89,7 +141,7 @@ public final class TelevisionStreamManager {
         VOLUMES.put(key, clamped);
         StreamSession session = SESSIONS.get(key);
         if (session != null) {
-            session.setVolume(clamped);
+            session.setVolume(effectiveVolume(pos));
         }
     }
 
@@ -128,6 +180,15 @@ public final class TelevisionStreamManager {
         }
     }
 
+    private static boolean touchesSpeaker(Level level, BlockPos cablePos) {
+        for (Direction direction : Direction.values()) {
+            if (level.getBlockState(cablePos.relative(direction)).is(MinecraftTv.TV_SPEAKER)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static TelevisionWall findClientWall(BlockPos pos) {
         Level level = Minecraft.getInstance().level;
         if (level == null) {
@@ -149,6 +210,9 @@ public final class TelevisionStreamManager {
                 iterator.remove();
             }
         }
+    }
+
+    private record CableNode(BlockPos pos, int steps) {
     }
 
     private record WallKey(BlockPos origin, Direction facing) {

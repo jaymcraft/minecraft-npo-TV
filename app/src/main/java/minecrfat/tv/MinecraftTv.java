@@ -29,12 +29,17 @@ public class MinecraftTv implements ModInitializer {
     public static final Identifier TELEVISION_ID = id("television");
     public static final Identifier TELEVISION_BLOCK_ENTITY_ID = id("television");
     public static final Identifier REMOTE_CONTROL_ID = id("remote_control");
+    public static final Identifier TV_SPEAKER_ID = id("tv_speaker");
     public static final ResourceKey<Block> TELEVISION_BLOCK_KEY =
             ResourceKey.create(Registries.BLOCK, TELEVISION_ID);
     public static final ResourceKey<Item> TELEVISION_ITEM_KEY =
             ResourceKey.create(Registries.ITEM, TELEVISION_ID);
     public static final ResourceKey<Item> REMOTE_CONTROL_ITEM_KEY =
             ResourceKey.create(Registries.ITEM, REMOTE_CONTROL_ID);
+    public static final ResourceKey<Block> TV_SPEAKER_BLOCK_KEY =
+            ResourceKey.create(Registries.BLOCK, TV_SPEAKER_ID);
+    public static final ResourceKey<Item> TV_SPEAKER_ITEM_KEY =
+            ResourceKey.create(Registries.ITEM, TV_SPEAKER_ID);
 
     public static final TelevisionBlock TELEVISION = new TelevisionBlock(
             BlockBehaviour.Properties.of()
@@ -53,6 +58,19 @@ public class MinecraftTv implements ModInitializer {
             new Item.Properties().setId(REMOTE_CONTROL_ITEM_KEY).stacksTo(1)
     );
 
+    public static final TvSpeakerBlock TV_SPEAKER = new TvSpeakerBlock(
+            BlockBehaviour.Properties.of()
+                    .setId(TV_SPEAKER_BLOCK_KEY)
+                    .strength(1.5F, 6.0F)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()
+    );
+
+    public static final Item TV_SPEAKER_ITEM = new BlockItem(
+            TV_SPEAKER,
+            new Item.Properties().setId(TV_SPEAKER_ITEM_KEY)
+    );
+
     public static final BlockEntityType<TelevisionBlockEntity> TELEVISION_BLOCK_ENTITY =
             FabricBlockEntityTypeBuilder.create(TelevisionBlockEntity::new, TELEVISION).build();
 
@@ -65,12 +83,15 @@ public class MinecraftTv implements ModInitializer {
         Registry.register(BuiltInRegistries.BLOCK, TELEVISION_ID, TELEVISION);
         Registry.register(BuiltInRegistries.ITEM, TELEVISION_ID, TELEVISION_ITEM);
         Registry.register(BuiltInRegistries.ITEM, REMOTE_CONTROL_ID, REMOTE_CONTROL_ITEM);
+        Registry.register(BuiltInRegistries.BLOCK, TV_SPEAKER_ID, TV_SPEAKER);
+        Registry.register(BuiltInRegistries.ITEM, TV_SPEAKER_ID, TV_SPEAKER_ITEM);
         Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, TELEVISION_BLOCK_ENTITY_ID, TELEVISION_BLOCK_ENTITY);
 
         CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.FUNCTIONAL_BLOCKS)
                 .register(entries -> {
                     entries.accept(TELEVISION_ITEM);
                     entries.accept(REMOTE_CONTROL_ITEM);
+                    entries.accept(TV_SPEAKER_ITEM);
                 });
 
         PayloadTypeRegistry.serverboundPlay().register(SetChannelPayload.TYPE, SetChannelPayload.CODEC);

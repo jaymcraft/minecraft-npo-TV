@@ -15,6 +15,7 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 - GUI met knoppen voor `NPO 1`, `NPO 2`, `NPO 3`, `Custom`, `Uit` en `Open stream`
 - Afstandsbediening item om een TV binnen 16 blokken te openen
 - Volume slider per TV of TV-muur op de client
+- TV Speaker block met redstone-dust kabel voor een lokale volume-boost
 - Kanaalstatus op het block: `off`, `npo1`, `npo2`, `npo3`, `custom`
 - Multiplayer-safe channel updates via server packet `minecraft_tv:set_channel`
 - Client-side stream playback met VLCJ/libVLC
@@ -47,6 +48,13 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 5. Kies `NPO 1`, `NPO 2`, `NPO 3`, `Custom` of `Uit`.
 6. Gebruik de volume slider om het lokale VLC-volume voor deze TV of TV-muur te wijzigen.
 7. Gebruik `Open stream` om de officiele NPO-pagina of de ingestelde custom URL in je browser te openen.
+8. Plaats optioneel `minecraft_tv:tv_speaker` en verbind hem met redstone dust aan de TV voor een volume-boost.
+
+## TV Speaker
+
+De mod voegt `minecraft_tv:tv_speaker` toe. De speaker werkt als decoratief blok totdat je hem met redstone dust aan een TV of TV-muur koppelt. De redstone hoeft niet powered te zijn; dust telt hier als kabel.
+
+Als minstens een speaker via zo'n redstone-dust pad verbonden is, krijgt die TV of TV-muur lokaal `+20%` volume, met een maximum van `100%`. De volume slider blijft de basisinstelling en de boost wordt alleen op de client toegepast. Servers beheren geen audio.
 
 ## Afstandsbediening
 

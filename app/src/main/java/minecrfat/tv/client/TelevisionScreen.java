@@ -24,7 +24,7 @@ public class TelevisionScreen extends Screen {
     @Override
     protected void init() {
         int centerX = width / 2;
-        int top = height / 2 - 68;
+        int top = height / 2 - 58;
         addChannelButton(centerX - 102, top, TelevisionChannel.NPO1, "button.minecraft_tv.npo1");
         addChannelButton(centerX + 2, top, TelevisionChannel.NPO2, "button.minecraft_tv.npo2");
         addChannelButton(centerX - 102, top + 24, TelevisionChannel.NPO3, "button.minecraft_tv.npo3");
@@ -82,6 +82,15 @@ public class TelevisionScreen extends Screen {
                 Component.translatable("screen.minecraft_tv.playback_status", Component.translatable(status.translationKey())),
                 width / 2,
                 height / 2 - 72,
+                0xD6E8FF
+        );
+        graphics.centeredText(
+                font,
+                Component.translatable("screen.minecraft_tv.speaker_status", Component.translatable(TelevisionStreamManager.speakerConnected(pos)
+                        ? "status.minecraft_tv.speaker_connected"
+                        : "status.minecraft_tv.speaker_not_connected")),
+                width / 2,
+                height / 2 - 60,
                 0xD6E8FF
         );
         super.extractRenderState(graphics, mouseX, mouseY, delta);
