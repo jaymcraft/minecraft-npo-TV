@@ -22,7 +22,7 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 - Grote TV-muur: aangrenzende TV-blokken met dezelfde kijkrichting vormen samen een groot beeld
 - GitHub Actions workflow die automatisch een jar bouwt en uploadt als artifact
 
-## Installati
+## Installatie
 
 1. Installeer Minecraft Java 26.2 met Fabric Loader.
 2. Installeer Fabric API voor Minecraft 26.2.
