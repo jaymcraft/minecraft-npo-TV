@@ -24,7 +24,7 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 
 1. Installeer Minecraft Java 26.2 met Fabric Loader.
 2. Installeer Fabric API voor Minecraft 26.2.
-3. Bouw de mod of download de jar uit GitHub Actions.
+3. Bouw de mod lokaal of download de jar uit GitHub Actions.
 4. Zet de jar in je Minecraft mods-map:
 
 ```text
@@ -65,6 +65,8 @@ Na de eerste start maakt de mod dit config-bestand aan:
 config/minecraft_tv_streams.properties
 ```
 
+Als je dit bestand al had voordat het custom kanaal bestond, voeg `custom=` dan handmatig toe. Bestaande config-bestanden worden niet automatisch herschreven.
+
 Voor echte in-game video moet je daar directe media-URL's invullen, bijvoorbeeld een vrije HLS teststream:
 
 ```properties
@@ -102,7 +104,14 @@ De jar komt daarna in:
 app/build/libs/
 ```
 
-GitHub bouwt automatisch bij push naar `main`, bij pull requests en via handmatige workflow-start. De jar wordt geupload als artifact met de naam `minecraft-tv-jar`.
+GitHub bouwt automatisch bij push naar `main`, bij pull requests en via handmatige workflow-start. Open op GitHub de tab `Actions`, kies de laatste `Build Mod Jar` run en download het artifact `minecraft-tv-jar`. Lokaal bouwen met `./gradlew build` blijft ook werken.
+
+## Troubleshooting
+
+- TV in je hand is paars/zwart: gebruik de nieuwste jar en controleer dat `assets/minecraft_tv/items/television.json` in de jar zit.
+- Custom kanaal speelt niet: controleer dat `custom=` een directe `.m3u8`, `.mp4` of andere media-URL bevat.
+- NPO- of YouTube-webpagina's werken niet als directe stream; gebruik daarvoor `Open stream` in de browser.
+- VLC/libVLC ontbreekt of werkt niet: de mod crasht niet, maar toont het statische fallback scherm.
 
 ## Technische Details
 
