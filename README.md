@@ -31,12 +31,6 @@ De mod embedt geen officiele NPO-logo's of NPO-video's. De knop `Open stream` op
 ~/Library/Application Support/minecraft/mods/
 ```
 
-Op macOS met jouw huidige setup is dat bijvoorbeeld:
-
-```text
-/Users/jayden/Library/Application Support/minecraft/mods/minecraft-tv-1.0.0.jar
-```
-
 ## Gebruik In Game
 
 1. Start Minecraft met Fabric.
