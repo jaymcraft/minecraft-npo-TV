@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "minecraft_tv:block/television_off"
+    "model": "minecraft_tv:item/television"
   }
 }

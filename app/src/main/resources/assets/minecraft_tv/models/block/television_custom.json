@@ -2,7 +2,7 @@
   "parent": "minecraft:block/orientable",
   "textures": {
     "top": "minecraft_tv:block/tv_case",
-    "front": "minecraft_tv:block/tv_screen_custom",
+    "front": "minecraft_tv:block/tv_case",
     "side": "minecraft_tv:block/tv_case"
   }
 }

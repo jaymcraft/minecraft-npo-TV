@@ -15,4 +15,8 @@ public class TelevisionBlockEntityRenderState extends BlockEntityRenderState {
     public int wallHeight = 1;
     public int wallColumn = 0;
     public int wallRow = 0;
+    public boolean connectedNegative;
+    public boolean connectedPositive;
+    public boolean connectedAbove;
+    public boolean connectedBelow;
 }
