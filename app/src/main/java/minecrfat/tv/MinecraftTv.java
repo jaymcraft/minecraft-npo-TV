@@ -54,7 +54,7 @@ public class MinecraftTv implements ModInitializer {
             new Item.Properties().setId(TELEVISION_ITEM_KEY)
     );
 
-    public static final Item REMOTE_CONTROL_ITEM = new Item(
+    public static final Item REMOTE_CONTROL_ITEM = new RemoteControlItem(
             new Item.Properties().setId(REMOTE_CONTROL_ITEM_KEY).stacksTo(1)
     );
 

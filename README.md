@@ -67,7 +67,16 @@ Voorbeeld: als de slider op `50%` staat en de speaker verbonden is, speelt de TV
 
 ## Afstandsbediening
 
-De mod voegt ook `minecraft_tv:remote_control` toe. Houd de afstandsbediening vast, kijk naar een TV binnen 16 blokken en rechtermuisklik om dezelfde TV-GUI te openen. Dit werkt client-side; kanaalwissels blijven via het bestaande server packet lopen.
+De mod voegt ook `minecraft_tv:remote_control` toe. Houd de afstandsbediening vast, kijk naar een TV binnen 16 blokken en rechtermuisklik om dezelfde TV-GUI te openen.
+
+Je kunt een afstandsbediening ook koppelen aan een TV of TV-muur:
+
+1. Houd de afstandsbediening vast.
+2. Kijk naar de TV.
+3. Sneak + rechtermuisklik om de remote te koppelen.
+4. Daarna opent normale rechtermuisklik de gekoppelde TV, zolang die binnen 16 blokken en in dezelfde dimensie staat.
+
+Zonder koppeling blijft de oude bediening werken: richt op een TV binnen 16 blokken en rechtermuisklik. Dit werkt client-side; kanaalwissels blijven via het bestaande server packet lopen.
 
 ## Grote TV-Muur
 

@@ -29,5 +29,11 @@
   "screen.minecraft_tv.speaker_status": "Speaker: %s",
   "status.minecraft_tv.speaker_connected": "verbonden",
   "status.minecraft_tv.speaker_not_connected": "niet verbonden",
-  "slider.minecraft_tv.volume_speaker": "Volume: %s%% (+ speaker)"
+  "slider.minecraft_tv.volume_speaker": "Volume: %s%% (+ speaker)",
+  "tooltip.minecraft_tv.remote_control.bound": "Gekoppeld aan: %s %s %s",
+  "tooltip.minecraft_tv.remote_control.unbound": "Niet gekoppeld",
+  "message.minecraft_tv.remote_control.bound": "Afstandsbediening gekoppeld aan TV",
+  "message.minecraft_tv.remote_control.not_found": "Gekoppelde TV niet gevonden",
+  "message.minecraft_tv.remote_control.too_far": "Gekoppelde TV is te ver weg",
+  "message.minecraft_tv.remote_control.wrong_dimension": "Gekoppelde TV staat in een andere dimensie"
 }

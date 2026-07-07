@@ -29,5 +29,11 @@
   "screen.minecraft_tv.speaker_status": "Speaker: %s",
   "status.minecraft_tv.speaker_connected": "connected",
   "status.minecraft_tv.speaker_not_connected": "not connected",
-  "slider.minecraft_tv.volume_speaker": "Volume: %s%% (+ speaker)"
+  "slider.minecraft_tv.volume_speaker": "Volume: %s%% (+ speaker)",
+  "tooltip.minecraft_tv.remote_control.bound": "Linked to: %s %s %s",
+  "tooltip.minecraft_tv.remote_control.unbound": "Not linked",
+  "message.minecraft_tv.remote_control.bound": "Remote linked to TV",
+  "message.minecraft_tv.remote_control.not_found": "Linked TV not found",
+  "message.minecraft_tv.remote_control.too_far": "Linked TV is too far away",
+  "message.minecraft_tv.remote_control.wrong_dimension": "Linked TV is in another dimension"
 }

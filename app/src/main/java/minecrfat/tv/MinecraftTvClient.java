@@ -8,10 +8,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 public class MinecraftTvClient implements ClientModInitializer {
     private static final double REMOTE_RANGE = 16.0D;
@@ -23,6 +26,11 @@ public class MinecraftTvClient implements ClientModInitializer {
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (!world.isClientSide()) {
+                return InteractionResult.PASS;
+            }
+
+            ItemStack heldStack = player.getItemInHand(hand);
+            if (player.isShiftKeyDown() && heldStack.is(MinecraftTv.REMOTE_CONTROL_ITEM)) {
                 return InteractionResult.PASS;
             }
 
@@ -46,6 +54,18 @@ public class MinecraftTvClient implements ClientModInitializer {
             }
 
             HitResult hit = player.pick(REMOTE_RANGE, 0.0F, false);
+            if (player.isShiftKeyDown()) {
+                return InteractionResult.PASS;
+            }
+
+            var bound = RemoteControlItem.boundTelevision(stack);
+            if (bound.isPresent()) {
+                InteractionResult result = openBoundTelevision(player, world, bound.get());
+                if (result != InteractionResult.PASS) {
+                    return result;
+                }
+            }
+
             if (!(hit instanceof BlockHitResult blockHit)) {
                 return InteractionResult.PASS;
             }
@@ -58,6 +78,30 @@ public class MinecraftTvClient implements ClientModInitializer {
             openTelevisionScreen(blockHit.getBlockPos(), state.getValue(TelevisionBlock.CHANNEL));
             return InteractionResult.SUCCESS;
         });
+    }
+
+    private static InteractionResult openBoundTelevision(net.minecraft.world.entity.player.Player player,
+                                                         net.minecraft.world.level.Level world,
+                                                         RemoteControlItem.BoundTelevision bound) {
+        if (!world.dimension().identifier().equals(bound.dimension())) {
+            player.sendOverlayMessage(Component.translatable("message.minecraft_tv.remote_control.wrong_dimension"));
+            return InteractionResult.PASS;
+        }
+
+        BlockPos pos = bound.pos();
+        if (player.distanceToSqr(Vec3.atCenterOf(pos)) > REMOTE_RANGE * REMOTE_RANGE) {
+            player.sendOverlayMessage(Component.translatable("message.minecraft_tv.remote_control.too_far"));
+            return InteractionResult.PASS;
+        }
+
+        var state = world.getBlockState(pos);
+        if (!state.is(MinecraftTv.TELEVISION)) {
+            player.sendOverlayMessage(Component.translatable("message.minecraft_tv.remote_control.not_found"));
+            return InteractionResult.PASS;
+        }
+
+        openTelevisionScreen(pos, state.getValue(TelevisionBlock.CHANNEL));
+        return InteractionResult.SUCCESS;
     }
 
     private static void openTelevisionScreen(net.minecraft.core.BlockPos pos, TelevisionChannel channel) {
